@@ -55,29 +55,32 @@
     </div>
 
     <script>
-        document.getElementById('metadata-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
+       document.getElementById('metadata-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-            const url = document.getElementById('page-url').value;
-            const title = document.getElementById('meta-title').value;
-            const description = document.getElementById('meta-description').value;
+    const url = document.getElementById('page-url').value;
+    const title = document.getElementById('meta-title').value;
+    const description = document.getElementById('meta-description').value;
 
-            // Send data to backend
-            try {
-                const response = await fetch('https://your-backend-url.com/update-metadata', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ url, title, description })
-                });
+    // Update the backend URL here
+    const backendUrl = 'https://app-silk-delta.vercel.app/'; // <-- Replace with your backend URL
 
-                const result = await response.json();
-                document.getElementById('status-message').innerText = result.message;
-            } catch (error) {
-                document.getElementById('status-message').innerText = 'Error updating metadata';
-            }
+    // Send data to backend
+    try {
+        const response = await fetch(backendUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url, title, description })
         });
+
+        const result = await response.json();
+        document.getElementById('status-message').innerText = result.message;
+    } catch (error) {
+        document.getElementById('status-message').innerText = 'Error updating metadata';
+    }
+});
     </script>
 </body>
 </html>

@@ -3,12 +3,12 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 const app = express();
 
+// Read Webflow API key and Site ID from environment variables
+const API_KEY = process.env.WEBFLOW_API_KEY;
+const SITE_ID = process.env.WEBFLOW_SITE_ID;
+
 // Parse JSON bodies
 app.use(bodyParser.json());
-
-// Replace with your Webflow API key and site ID
-const API_KEY = '5f385401713fe6cdf74f8ebf31ebfee3e38719dfb11200e2058a030fdd5b85fb';
-const SITE_ID = '67ac8d7653315213e7829798';
 
 // Endpoint to handle metadata update
 app.post('/update-metadata', async (req, res) => {
