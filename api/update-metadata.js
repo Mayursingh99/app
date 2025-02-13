@@ -1,39 +1,48 @@
-import axios from 'axios';
+const axios = require('axios');
+const bodyParser = require('body-parser');
 
+// Enable dotenv for local testing (if needed)
+require('dotenv').config();
 
-export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Method Not Allowed' });
-    }
+// Read Webflow API key and Site ID from environment variables
+const API_KEY = process.env.WEBFLOW_API_KEY;
+const SITE_ID = process.env.WEBFLOW_SITE_ID;
 
+// Handle the API request
+module.exports = async (req, res) => {
+  if (req.method === 'POST') {
     const { url, title, description } = req.body;
 
+    // Check for missing fields
     if (!url || !title || !description) {
-        return res.status(400).json({ message: 'Missing required fields' });
+      return res.status(400).json({ message: 'Missing required fields' });
     }
 
     try {
-        // Webflow API request
-        const response = await axios.patch(
-            `https://api.webflow.com/sites/${process.env.WEBFLOW_SITE_ID}/pages`,
-            {
-                metaTitle: title,
-                metaDescription: description
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${process.env.WEBFLOW_API_KEY}`,
-                    "accept-version": "1.0.0"
-                }
-            }
-        );
+      // Make the Webflow API request
+      const response = await axios.put(
+        `https://api.webflow.com/sites/${SITE_ID}/pages`,
+        {
+          "url": url,
+          "metaTitle": title,
+          "metaDescription": description
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${API_KEY}`,
+            "accept-version": "1.0.0"
+          }
+        }
+      );
 
-        res.status(200).json({ message: 'Metadata updated successfully' });
+      // Send success response
+      return res.status(200).json({ message: 'Metadata updated successfully' });
     } catch (error) {
-        console.error("Error:", error.response?.data || error.message || error);
-        res.status(500).json({
-            message: 'Error updating metadata',
-            error: error.response?.data || error.message
-        });
+      console.error('Webflow API error:', error.response || error.message);
+      return res.status(500).json({ message: 'Error updating metadata', error: error.message });
     }
-}
+  } else {
+    // Method Not Allowed
+    return res.status(405).json({ message: 'Method Not Allowed' });
+  }
+};
