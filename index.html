@@ -55,33 +55,31 @@
     </div>
 
     <script>
-        document.getElementById('metadata-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
+       document.getElementById('metadata-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-            const url = document.getElementById('page-url').value;
-            const title = document.getElementById('meta-title').value;
-            const description = document.getElementById('meta-description').value;
+    const url = document.getElementById('page-url').value;
+    const title = document.getElementById('meta-title').value;
+    const description = document.getElementById('meta-description').value;
 
-            const backendUrl = 'https://app-silk-delta.vercel.app/api/update-metadata'; // ✅ Fixed endpoint
+    const backendUrl = 'https://app-silk-delta.vercel.app/api/update-metadata'; // <-- Correct URL
 
-            try {
-                const response = await fetch(backendUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ url, title, description })
-                });
-
-                if (!response.ok) throw new Error(`Error: ${response.statusText}`);
-
-                const result = await response.json();
-                document.getElementById('status-message').innerText = result.message;
-            } catch (error) {
-                document.getElementById('status-message').innerText = 'Error updating metadata';
-                console.error("Error:", error);
-            }
+    try {
+        const response = await fetch(backendUrl, {
+            method: 'POST',  // Ensure this is POST
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url, title, description })
         });
+
+        const result = await response.json();
+        document.getElementById('status-message').innerText = result.message;
+    } catch (error) {
+        document.getElementById('status-message').innerText = 'Error updating metadata';
+    }
+});
+
     </script>
 </body>
 </html>

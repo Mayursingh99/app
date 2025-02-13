@@ -1,5 +1,4 @@
 const axios = require('axios');
-const bodyParser = require('body-parser');
 
 // Enable dotenv for local testing (if needed)
 require('dotenv').config();
@@ -10,6 +9,7 @@ const SITE_ID = process.env.WEBFLOW_SITE_ID;
 
 // Handle the API request
 module.exports = async (req, res) => {
+  // Ensure we are handling POST requests
   if (req.method === 'POST') {
     const { url, title, description } = req.body;
 
