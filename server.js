@@ -1,49 +1,58 @@
-require("dotenv").config();
-const express = require("express");
-const axios = require("axios");
+const express = require('express');
+const bodyParser = require('body-parser');
+const axios = require('axios');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
-app.use(express.json());
+// Middleware to parse JSON bodies
+app.use(bodyParser.json());
 
-const WEBFLOW_API_KEY = process.env.WEBFLOW_API_KEY;
-const WEBFLOW_COLLECTION_ID = process.env.WEBFLOW_COLLECTION_ID; // Set this in your Vercel environment
+// PUT request handler to update metadata
+app.put('/update-metadata', async (req, res) => {
+  const { itemId, title, description } = req.body;
 
-// Update Webflow CMS Metadata
-app.put("/update-metadata", async (req, res) => {
-    try {
-        const { itemId, title, description } = req.body;
+  // Check if all required fields are provided
+  if (!itemId || !title || !description) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
 
-        if (!itemId || !title || !description) {
-            return res.status(400).json({ error: "Missing required fields: itemId, title, description" });
+  try {
+    // Make a request to Webflow API to update metadata
+    const response = await axios.put(
+      `https://api.webflow.com/cms/collections/${process.env.WEBFLOW_COLLECTION_ID}/items/${itemId}`,
+      {
+        fields: {
+          name: title, // Update page title
+          metaTitle: title, // Meta title field
+          metaDescription: description // Meta description field
         }
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.WEBFLOW_API_KEY}`,
+          'accept-version': '1.0.0',
+        },
+      }
+    );
 
-        const response = await axios.patch(
-            `https://api.webflow.com/collections/${WEBFLOW_COLLECTION_ID}/items/${itemId}`,
-            {
-                fields: {
-                    name: title, // Webflow CMS requires a 'name' field
-                    metaTitle: title, // Make sure these fields exist in your CMS collection
-                    metaDescription: description
-                }
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${WEBFLOW_API_KEY}`,
-                    "accept-version": "1.0.0",
-                    "Content-Type": "application/json"
-                }
-            }
-        );
-
-        res.json({ success: true, data: response.data });
-    } catch (error) {
-        console.error("Error updating metadata:", error.response?.data || error.message);
-        res.status(500).json({ error: error.response?.data || "Internal Server Error" });
+    // Check if the request was successful
+    if (response.status === 200) {
+      res.status(200).json({ message: 'Metadata updated successfully' });
+    } else {
+      res.status(500).json({ message: 'Failed to update metadata' });
     }
+
+  } catch (error) {
+    console.error('Error updating metadata:', error);
+    res.status(500).json({ message: 'Error updating metadata' });
+  }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });
