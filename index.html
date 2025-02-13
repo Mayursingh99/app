@@ -62,7 +62,7 @@
             const title = document.getElementById('meta-title').value;
             const description = document.getElementById('meta-description').value;
 
-            const backendUrl = 'https://app-silk-delta.vercel.app/update-metadata'; // ✅ Fixed endpoint
+            const backendUrl = 'https://app-silk-delta.vercel.app/api/update-metadata'; // ✅ Fixed endpoint
 
             try {
                 const response = await fetch(backendUrl, {
