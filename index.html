@@ -5,35 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Webflow Metadata</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        .form-container {
-            max-width: 500px;
-            margin: auto;
-        }
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 8px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .form-container { max-width: 500px; margin: auto; }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+        input, textarea { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ccc; }
+        button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
     </style>
 </head>
 <body>
@@ -41,14 +18,11 @@
         <h2>Update Webflow Metadata</h2>
         <form id="metadata-form">
             <label for="page-url">Page URL:</label>
-            <input type="url" id="page-url" name="page-url" required>
-            
+            <input type="url" id="page-url" required>
             <label for="meta-title">Meta Title:</label>
-            <input type="text" id="meta-title" name="meta-title" required>
-            
+            <input type="text" id="meta-title" required>
             <label for="meta-description">Meta Description:</label>
-            <textarea id="meta-description" name="meta-description" rows="4" required></textarea>
-            
+            <textarea id="meta-description" rows="4" required></textarea>
             <button type="submit">Update Metadata</button>
         </form>
         <div id="status-message"></div>
@@ -63,23 +37,18 @@
             const description = document.getElementById('meta-description').value;
         
             try {
-                const response = await fetch("https://app-silk-delta.vercel.app/api/update-metadata", {
+                const response = await fetch("/api/update-metadata", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ url, title, description })
                 });
-        
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.status} ${response.statusText}`);
-                }
-        
+
                 const result = await response.json();
                 document.getElementById('status-message').innerText = result.message;
             } catch (error) {
                 document.getElementById('status-message').innerText = 'Error updating metadata: ' + error.message;
             }
         });
-        </script>
-        
+    </script>
 </body>
 </html>
