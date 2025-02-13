@@ -6,6 +6,7 @@ export default async function handler(req, res) {
     }
 
     const { url, title, description } = req.body;
+
     if (!url || !title || !description) {
         return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -28,7 +29,10 @@ export default async function handler(req, res) {
 
         res.status(200).json({ message: 'Metadata updated successfully' });
     } catch (error) {
-        console.error("Error:", error.response?.data || error);
-        res.status(500).json({ message: 'Error updating metadata' });
+        console.error("Error:", error.response?.data || error.message || error);
+        res.status(500).json({
+            message: 'Error updating metadata',
+            error: error.response?.data || error.message
+        });
     }
 }
