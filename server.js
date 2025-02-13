@@ -1,35 +1,28 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-const dotenv = require('dotenv');
-
-dotenv.config();
+require('dotenv').config();  // To load environment variables like API key and site ID
 
 const app = express();
-const port = process.env.PORT || 3000;
 
-// Middleware to parse JSON bodies
+// Middleware to parse incoming JSON
 app.use(bodyParser.json());
 
-// PUT request handler to update metadata
+// Your route to handle metadata update via POST or PUT
 app.put('/update-metadata', async (req, res) => {
-  const { itemId, title, description } = req.body;
+  const { url, title, description } = req.body;
 
-  // Check if all required fields are provided
-  if (!itemId || !title || !description) {
+  if (!url || !title || !description) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
   try {
-    // Make a request to Webflow API to update metadata
     const response = await axios.put(
-      `https://api.webflow.com/cms/collections/${process.env.WEBFLOW_COLLECTION_ID}/items/${itemId}`,
+      `https://api.webflow.com/sites/${process.env.WEBFLOW_SITE_ID}/pages`,
       {
-        fields: {
-          name: title, // Update page title
-          metaTitle: title, // Meta title field
-          metaDescription: description // Meta description field
-        }
+        url,
+        metaTitle: title,
+        metaDescription: description,
       },
       {
         headers: {
@@ -38,21 +31,12 @@ app.put('/update-metadata', async (req, res) => {
         },
       }
     );
-
-    // Check if the request was successful
-    if (response.status === 200) {
-      res.status(200).json({ message: 'Metadata updated successfully' });
-    } else {
-      res.status(500).json({ message: 'Failed to update metadata' });
-    }
-
+    return res.status(200).json({ message: 'Metadata updated successfully' });
   } catch (error) {
-    console.error('Error updating metadata:', error);
-    res.status(500).json({ message: 'Error updating metadata' });
+    console.error(error);
+    return res.status(500).json({ message: 'Error updating metadata' });
   }
 });
 
 // Start the server
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+app.listen(3000, () => console.log('Server is running on http://localhost:3000'));
